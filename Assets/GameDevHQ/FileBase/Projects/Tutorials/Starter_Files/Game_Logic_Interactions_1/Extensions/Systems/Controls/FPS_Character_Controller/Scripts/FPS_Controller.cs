@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
 {
     [RequireComponent(typeof(CharacterController))]
@@ -23,7 +23,8 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
 
         private CharacterController _controller; //reference variable to the character controller component
         private float _yVelocity = 0.0f; //cache our y velocity
-        
+
+        private int score = 0; 
 
         [Header("Headbob Settings")]       
         [SerializeField][Tooltip("Smooth out the transition from moving to not moving")]
@@ -48,6 +49,7 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
             _fpsCamera = GetComponentInChildren<Camera>();
             _initialCameraPos = _fpsCamera.transform.localPosition;
             Cursor.lockState = CursorLockMode.Locked;
+            score = 0; 
         }
 
         private void Update()
@@ -59,7 +61,12 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
 
             FPSController();
             CameraController();
-            HeadBobbing(); 
+            HeadBobbing();
+            if (Mouse.current.rightButton.wasPressedThisFrame)
+            {
+                Shooting();
+            }
+
         }
 
         void FPSController()
@@ -174,6 +181,44 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
                 _fpsCamera.transform.localPosition = resetHead; //assign the head position back to the initial cam pos
             }
         }
+
+        void Shooting()
+        {
+            Ray rayOrigin = _fpsCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hitinfo;
+            Debug.DrawRay(rayOrigin.origin, rayOrigin.direction * 100f, Color.red, 5f);
+
+            if (Physics.Raycast(rayOrigin, out hitinfo, Mathf.Infinity, 1<<6 | 1<<7))
+            {
+                if(hitinfo.collider.tag == "Enemy")
+                {
+                    var enemy = hitinfo.collider.GetComponent<EnemyAI>();
+                    enemy.Die();
+                    AddScore(); 
+                }
+
+                if(hitinfo.collider.tag == "Barrier")
+                {
+                    TakeScore();
+                }
+                
+            }
+        }
+        public void AddScore()
+        {
+            score += 10;
+            Debug.Log("Score: " + score);
+        }
+
+        public void TakeScore()
+        {
+            score -= 10;
+            Debug.Log("Score: " + score);
+        }
     }
+
+   
 }
+
+
 

@@ -18,14 +18,14 @@ public class EnemyAI : MonoBehaviour
     private GameObject _endPoint;
     private NavMeshAgent _agent;
    
-    private Animator _animator;
+    //private Animator _animator;
 
     [SerializeField]
     private EnemyState _currentState;
 
     void Start()
     {
-        _animator = GetComponent<Animator>();   
+        //_animator = GetComponent<Animator>();   
         _agent = GetComponent<NavMeshAgent>();
         _endPoint = GameObject.Find("Endpoint");
         if(_agent != null)
@@ -45,11 +45,12 @@ public class EnemyAI : MonoBehaviour
         switch (_currentState) 
         {
             case EnemyState.Run:
+                //_animator.SetBool("isHiding", false); 
                 _agent.isStopped = false;
                 break;
             case EnemyState.Hide:
+                //_animator.SetBool("isHiding", true);
                 StartCoroutine(HideRoutine());
-                Destroy(this.GetComponent<BoxCollider>());
                 break;
             case EnemyState.Die:
                 Debug.Log("Died"); 
@@ -74,7 +75,15 @@ public class EnemyAI : MonoBehaviour
     IEnumerator HideRoutine()
     {
         _agent.isStopped = true;
+        _agent.GetComponent<Collider>().enabled = false; 
         yield return new WaitForSeconds(Random.Range(2f, 5f));
-        _currentState = EnemyState.Run; 
+        _currentState = EnemyState.Run;
+        yield return new WaitForSeconds(2f);
+        _agent.GetComponent<Collider>().enabled = true;
+        
+    }
+    public void Die()
+    {
+        Debug.Log("Died"); 
     }
 }
