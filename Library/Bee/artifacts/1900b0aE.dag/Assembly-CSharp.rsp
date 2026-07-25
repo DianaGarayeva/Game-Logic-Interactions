@@ -364,6 +364,7 @@
 "Assets/EnemySpawningManager.cs"
 "Assets/GameDevHQ/FileBase/Projects/Tutorials/Starter_Files/Game_Logic_Interactions_1/Extensions/Systems/Controls/FPS_Character_Controller/Scripts/FPS_Controller.cs"
 "Assets/HidePoint.cs"
+"Assets/UIManager.cs"
 -langversion:9.0
 /deterministic
 /optimize+

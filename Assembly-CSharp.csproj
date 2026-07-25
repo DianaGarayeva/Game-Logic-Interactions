@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Assets\HidePoint.cs" />
     <Compile Include="Assets\EnemySpawningManager.cs" />
+    <Compile Include="Assets\UIManager.cs" />
     <Compile Include="Assets\EnemyAI.cs" />
     <Compile Include="Assets\GameDevHQ\FileBase\Projects\Tutorials\Starter_Files\Game_Logic_Interactions_1\Extensions\Systems\Controls\FPS_Character_Controller\Scripts\FPS_Controller.cs" />
   </ItemGroup>

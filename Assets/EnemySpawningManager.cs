@@ -13,28 +13,34 @@ public class EnemySpawningManager : MonoBehaviour
     [SerializeField]
     private GameObject _startPoint;
 
+
     [SerializeField]
-    private bool _isGameRunning;
+    private bool _isGameOver; 
+
+
     void Start()
     {
-        _isGameRunning = true;
+        _isGameOver = false;
         StartCoroutine(SpawningRoutine());
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     IEnumerator SpawningRoutine()
     {
-        while (_isGameRunning)
+        while (!_isGameOver)
         {
             GameObject newEnemy = Instantiate(_enemyPrefab, _startPoint.transform.position, Quaternion.identity);
             newEnemy.transform.parent = _enemyContainer.transform;
             yield return new WaitForSeconds(Random.Range(5, 15));
         }
     }
+
+    public void onGameOver()
+    {
+        _isGameOver = true; 
+    }
+
+
+    
+    
 
 }

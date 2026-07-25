@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Animations;
 public class EnemyAI : MonoBehaviour
 {
     private enum EnemyState
@@ -12,22 +10,42 @@ public class EnemyAI : MonoBehaviour
         Die,
     }
 
+    public static int enemyCounter;
+
     [SerializeField]
     private GameObject _startPoint;
+
     [SerializeField]
     private GameObject _endPoint;
+
     private NavMeshAgent _agent;
-   
-    //private Animator _animator;
+
+    private UIManager _ui;
+
+    private Animator _animator;
 
     [SerializeField]
     private EnemyState _currentState;
 
+    private bool _isHiding;
+    
     void Start()
     {
-        //_animator = GetComponent<Animator>();   
-        _agent = GetComponent<NavMeshAgent>();
         _endPoint = GameObject.Find("Endpoint");
+
+        _ui = GameObject.Find("UI_Manager").GetComponent<UIManager>();
+        if (!_ui)
+        {
+            Debug.LogError("UI is null");
+        }
+
+        _animator = GetComponent<Animator>();
+        if (!_animator)
+        {
+            Debug.LogError("Animator is null");
+        }
+
+        _agent = GetComponent<NavMeshAgent>();
         if(_agent != null)
         {
          _agent.SetDestination(_endPoint.transform.position);
@@ -36,30 +54,39 @@ public class EnemyAI : MonoBehaviour
         {
             Debug.LogError("Agent is NULL");
         }
+
         _currentState = EnemyState.Run; 
     }
 
-    // Update is called once per frame
+    private void OnEnable()
+    {
+        enemyCounter++;
+    }
+
+    private void OnDestroy()
+    {
+        enemyCounter--;
+    }
+
     void Update()
     {
-        switch (_currentState) 
+        switch(_currentState)
         {
             case EnemyState.Run:
-                //_animator.SetBool("isHiding", false); 
                 _agent.isStopped = false;
+                _animator.SetBool("isHiding", false);
                 break;
             case EnemyState.Hide:
-                //_animator.SetBool("isHiding", true);
-                StartCoroutine(HideRoutine());
+                if (!_isHiding)
+                {
+                    _isHiding = true;
+                    StartCoroutine(HideRoutine());
+                }
                 break;
             case EnemyState.Die:
-                Debug.Log("Died"); 
-                break;
-            default:
-                Debug.Log("Default");
+                Debug.Log("Died");
                 break;
         }
-       
 
         if (!_agent.pathPending && _agent.hasPath && _agent.remainingDistance <= _agent.stoppingDistance)
         {
@@ -75,15 +102,24 @@ public class EnemyAI : MonoBehaviour
     IEnumerator HideRoutine()
     {
         _agent.isStopped = true;
-        _agent.GetComponent<Collider>().enabled = false; 
+        GetComponent<Collider>().enabled = false;
+        _animator.SetBool("isHiding", true);
         yield return new WaitForSeconds(Random.Range(2f, 5f));
         _currentState = EnemyState.Run;
-        yield return new WaitForSeconds(2f);
-        _agent.GetComponent<Collider>().enabled = true;
-        
+        yield return new WaitForSeconds(1f);
+        GetComponent<Collider>().enabled = true;
+        _isHiding = false; // reset the flag
     }
     public void Die()
     {
-        Debug.Log("Died"); 
+        _currentState = EnemyState.Die; 
+        _animator.SetBool("IsDead", true); 
+        Destroy(this.gameObject, 2f); 
     }
+
+    public void OnGameOver()
+    {
+        _agent.isStopped = true; 
+    }
+
 }
