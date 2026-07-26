@@ -1,5 +1,0 @@
-sceneSetups:
-- path: Assets/GameDevHQ/FileBase/Projects/Tutorials/Starter_Files/Game_Logic_Interactions_1/Scenes/GLI_1.unity
-  isLoaded: 1
-  isActive: 1
-  isSubScene: 0
