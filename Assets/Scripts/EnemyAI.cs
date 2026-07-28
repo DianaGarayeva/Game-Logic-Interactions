@@ -33,7 +33,12 @@ public class EnemyAI : MonoBehaviour
     [SerializeField]
     private GameObject _barrier;
 
+
     private bool _isHiding;
+
+    private AudioSource _audio;
+    [SerializeField]
+    private AudioClip _clip;
     
     void Start()
     {
@@ -67,6 +72,11 @@ public class EnemyAI : MonoBehaviour
             Debug.LogError("Spawning Manager is NULL");
         }
 
+        _audio = GetComponent<AudioSource>();
+        if (!_audio)
+        {
+            Debug.LogError("AudioSourse is null");
+        }
         _currentState = EnemyState.Run; 
     }
 
@@ -96,21 +106,23 @@ public class EnemyAI : MonoBehaviour
                 }
                 break;
             case EnemyState.Die:
-                //Debug.Log("Died");
+               
                 break;
         }
 
-        if (!_agent.pathPending && _agent.hasPath && _agent.remainingDistance <= _agent.stoppingDistance)
+
+        if (!_agent.pathPending &&
+            _agent.remainingDistance <= _agent.stoppingDistance)
         {
-            _agent.isStopped = true;
             _spawning.Escaped();
-            Destroy(this.gameObject, 1f); 
+            Destroy(this.gameObject); 
         }
     }
 
     public void Hide()
     {
-        _currentState = EnemyState.Hide; 
+        _currentState = EnemyState.Hide;
+        _agent.velocity = Vector3.zero;
     }
 
     IEnumerator HideRoutine()
@@ -118,7 +130,7 @@ public class EnemyAI : MonoBehaviour
         _agent.isStopped = true;
         GetComponent<Collider>().enabled = false;
         _animator.SetBool("isHiding", true);
-        yield return new WaitForSeconds(Random.Range(2f, 5f));
+        yield return new WaitForSeconds(Random.Range(0, 2f));
         _currentState = EnemyState.Run;
         yield return new WaitForSeconds(1f);
         GetComponent<Collider>().enabled = true;
@@ -127,14 +139,18 @@ public class EnemyAI : MonoBehaviour
     public void Die()
     {
         _currentState = EnemyState.Die;
-        _agent.isStopped = true; 
+        _agent.isStopped = true;
         _animator.SetTrigger("dead");
+        Destroy(this.GetComponent<Collider>());
         Destroy(this.gameObject, 3f);
+        _audio.PlayOneShot(_clip);
     }
  
     public void OnGameOver()
     {
-        _agent.isStopped = true; 
+        Debug.Log("GameOVer");
+        _agent.isStopped = true;
+        _agent.velocity = Vector3.zero;
     }
 
     

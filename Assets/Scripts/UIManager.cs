@@ -23,9 +23,14 @@ public class UIManager : MonoBehaviour
     private Text _loserText;
 
     [SerializeField]
-    private Image _crossImg; 
+    private Image _crossImg;
 
-      
+    [SerializeField]
+    private Text _enemiesEscaped;
+
+    [SerializeField]
+    private Text _enemiesSpawned;
+
     private EnemySpawningManager _spawnManager;
 
     [SerializeField]
@@ -52,7 +57,6 @@ public class UIManager : MonoBehaviour
             {
                 _remainingTime = 0;
                 _spawnManager.onGameOver();
-               
             }
             _timerText.text = seconds.ToString();
         }
@@ -78,6 +82,14 @@ public class UIManager : MonoBehaviour
         _crossImg.gameObject.SetActive(false);
         _button.gameObject.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
+        _enemiesEscaped.gameObject.SetActive(true);
+        _enemiesSpawned.gameObject.SetActive(true);
 
+    }
+
+    public void EnemiesEscaped(int escaped, int spawned)
+    {
+        _enemiesEscaped.text = "Enemies escaped: " + escaped.ToString();
+        _enemiesSpawned.text = "Enemies spawned: " + spawned.ToString();
     }
 }

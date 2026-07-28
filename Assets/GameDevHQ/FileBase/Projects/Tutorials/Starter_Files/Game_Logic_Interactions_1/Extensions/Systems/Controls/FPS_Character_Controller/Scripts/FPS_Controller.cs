@@ -30,10 +30,14 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
         private LayerMask _AImask;
 
 
+        private AudioSource _audio;
+        [SerializeField]
+        private AudioClip _shootClip;
+        
         private CharacterController _controller; //reference variable to the character controller component
         private float _yVelocity = 0.0f; //cache our y velocity
 
-        private int score = 0;
+        public static int score = 0;
 
         [Header("Headbob Settings")]
         [SerializeField]
@@ -75,6 +79,12 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
             {
                 Debug.LogError("UI is NULL");
             }
+            _audio = GetComponent<AudioSource>();
+            if (!_audio)
+            {
+                Debug.LogError("Audiosourse is NULL");
+            }
+
         }
 
         private void Update()
@@ -87,7 +97,7 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
             FPSController();
             CameraController();
             HeadBobbing();
-            if (Mouse.current.rightButton.wasPressedThisFrame)
+            if (Mouse.current.leftButton.wasPressedThisFrame)
             {
                 Shooting();
             }
@@ -209,6 +219,8 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
 
         void Shooting()
         {
+            _audio.PlayOneShot(_shootClip);
+
             Ray rayOrigin = _fpsCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitinfo;
 

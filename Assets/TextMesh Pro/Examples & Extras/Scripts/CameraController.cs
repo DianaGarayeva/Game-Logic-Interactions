@@ -62,6 +62,7 @@ namespace TMPro.Examples
 
             cameraTransform = transform;
             previousSmoothing = MovementSmoothing;
+         
         }
 
 

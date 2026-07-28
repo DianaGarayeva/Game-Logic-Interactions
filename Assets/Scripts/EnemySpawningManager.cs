@@ -19,19 +19,17 @@ public class EnemySpawningManager : MonoBehaviour
 
     private UIManager _ui;
 
-    private int count;
-
     private int _spawned;
     private int _escaped;
     private bool _win;
 
+
     void Start()
     {
         _isGameOver = false;
-        StartCoroutine(SpawningRoutine());
         _spawned = 0;
         _escaped = 0;
-
+        StartCoroutine(SpawningRoutine());
         _ui = GameObject.Find("UI_Manager").GetComponent<UIManager>(); 
     }
 
@@ -41,25 +39,22 @@ public class EnemySpawningManager : MonoBehaviour
         {
             GameObject newEnemy = Instantiate(_enemyPrefab, _startPoint.transform.position, Quaternion.identity);
             newEnemy.transform.parent = _enemyContainer.transform;
-            newEnemy.name = $"Enemy {count}";
-            count++;
             _spawned++;
-            yield return new WaitForSeconds(Random.Range(5, 15));
+            yield return new WaitForSeconds(Random.Range(1f, 5f));
         }
     }
-
+        
     public void onGameOver()
     {
         _isGameOver = true;
         var enemiesLeft = GetComponentsInChildren<Collider>();
         int count = 0;
-        foreach(var enemy in enemiesLeft)
+        foreach (var enemy in enemiesLeft)
         {
+            count++;
             enemy.GetComponent<EnemyAI>().OnGameOver();
-            Debug.Log("Stop enemies");
-            count++; 
         }
-        if (_escaped >= _spawned * 50 / 100 | count>= _spawned * 50 / 100)
+        if (_escaped >= _spawned * 0.5f | GameDevHQ.FileBase.Plugins.FPS_Character_Controller.FPS_Controller.score<=50)
         {
             _win = false;
         }
@@ -72,6 +67,7 @@ public class EnemySpawningManager : MonoBehaviour
 
     public void Escaped()
     {
-        _escaped++; 
+        _escaped++;
+        _ui.EnemiesEscaped(_escaped, _spawned); 
     }
 }
