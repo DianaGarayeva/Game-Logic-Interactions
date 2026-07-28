@@ -9,7 +9,6 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
     public class FPS_Controller : MonoBehaviour
     {
         private UIManager _ui;
-
         [Header("Controller Info")]
         [SerializeField]
         [Tooltip("How fast can the controller walk?")]
@@ -27,6 +26,9 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
         private bool _isRunning = false; //bool to display if we are running
         [SerializeField]
         private bool _crouching = false; //bool to display if we are crouched or not
+        [SerializeField]
+        private LayerMask _AImask;
+
 
         private CharacterController _controller; //reference variable to the character controller component
         private float _yVelocity = 0.0f; //cache our y velocity
@@ -53,6 +55,9 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
         [Header("Camera Settings")]
         [SerializeField]
         [Tooltip("Control the look sensitivty of the camera")]
+
+  
+
         private float _lookSensitivity = 5.0f; //mouse sensitivity 
 
         private Camera _fpsCamera;
@@ -208,35 +213,32 @@ namespace GameDevHQ.FileBase.Plugins.FPS_Character_Controller
             RaycastHit hitinfo;
 
             Debug.DrawRay(rayOrigin.origin, rayOrigin.direction * 100f, Color.red, 5f);
-            if (Physics.Raycast(rayOrigin, out hitinfo, Mathf.Infinity, 1 << 6 | 1 << 7))
-
-                Debug.Log("Collider: " + hitinfo.collider.name);
-            //var enemy = hitinfo.collider.GetComponent<EnemyAI>();
-
-            //if (enemy != null)
-            //{
-            //    enemy.Die();
-            //    AddScore();
-            //}
-            //else if (hitinfo.collider.tag == "Barrier")
-            //{
-            //    TakeScore();
-            //}
-            //_ui.UpdateScore(score);
-
-        }
+            if (Physics.Raycast(rayOrigin, out hitinfo, Mathf.Infinity, _AImask))
+            {
+                //Debug.Log("Collider: " + hitinfo.collider.name);
+                if (hitinfo.collider.tag == "Enemy")
+                {
+                    var enemy = hitinfo.collider.GetComponent<EnemyAI>();
+                    enemy.Die();
+                    AddScore();
+                }
+                else if (hitinfo.collider.tag == "Barrier")
+                {
+                    var barrier = hitinfo.collider.GetComponent<Barrier>();
+                    barrier.HitBarrier();
+                }else if(hitinfo.collider.tag == "Barrels")
+                {
+                    var barrel = hitinfo.collider.GetComponent<Barrel>();
+                    barrel.Explode();
+                }
+                _ui.UpdateScore(score);
+            }
+         }
         public void AddScore()
         {
-            score += 10;
-        }
-
-        public void TakeScore()
-        {
-            score -= 10;
+            score += 50;
         }
     }
-
-   
 }
 
 

@@ -313,6 +313,8 @@ MonoBehaviour:
   _startPoint: {fileID: 0}
   _endPoint: {fileID: 0}
   _currentState: 0
+  _spawning: {fileID: 0}
+  _barrier: {fileID: 0}
 --- !u!195 &5839377259283106741
 NavMeshAgent:
   m_ObjectHideFlags: 0
